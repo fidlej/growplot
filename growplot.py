@@ -1,5 +1,9 @@
 #!/usr/bin/env python
+"""Usage: growplot.py FILENAME
+Plots values from the possibly still growing file.
+"""
 
+import sys
 import os
 
 import matplotlib
@@ -45,46 +49,48 @@ class TailReader:
 
 
 class Animator:
-    def __init__(self, figure):
+    def __init__(self, reader, figure):
         self.figure = figure
         self.ax = figure.add_subplot(111)
-        self.line = None
         self.xvalues = []
         self.yvalues = []
+        self.reader = reader
         self.counter = 0
+        self.timeout_millis = 200
+
+        (self.line,) = self.ax.plot(self.xvalues, self.yvalues,
+                linestyle='steps')
 
     def animate(self):
-        print "i", self.counter
-        self.counter += 1
-        self.xvalues.append(self.counter)
-        self.yvalues.append(self.counter**2)
+        values = self.reader.nextvalues()
+        if values:
+            for value in values:
+                self.counter += 1
+                self.xvalues.append(self.counter)
+                self.yvalues.append(value)
 
-        if self.line is None:
-            (self.line,) = self.ax.plot(self.xvalues, self.yvalues,
-                    linestyle='steps')
-        else:
             self.ax.set_xlim(0, self.xvalues[-1])
             self.ax.set_ylim(0, self.yvalues[-1])
             self.line.set_data(self.xvalues, self.yvalues)
 
-        self.figure.canvas.draw()
-        self.figure.canvas.manager.window.after(1000,
+            self.figure.canvas.draw()
+
+        self.figure.canvas.manager.window.after(self.timeout_millis,
                 self.animate)
 
 
 def main():
-    reader = TailReader("data.log")
-    import time
-    while True:
-        values = reader.nextvalues()
-        print "values:", values
-        time.sleep(1)
+    args = sys.argv[1:]
+    if len(args) != 1:
+        print >>sys.stderr, __doc__
+        sys.exit(1)
 
-    return
+    filename = args[0]
+    reader = TailReader(filename)
+
     figure = pyplot.figure()
-    animator = Animator(figure)
-
-    figure.canvas.manager.window.after(0, animator.animate)
+    animator = Animator(reader, figure)
+    animator.animate()
     pyplot.show()
 
 

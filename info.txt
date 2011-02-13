@@ -27,6 +27,13 @@ Cons:
 
 //-----------------------------------------------------------------
 TODO:
+- Add args parsing.
+It will allow to switch the aggregation function.
+
+- Keep the track of the min and max yvalues.
+- Update the limits with a margin
+    and don't update them if user zoomed somewhere.
+
 Q: How is the animation changed in new matplotlib?
 See the animation module.
 

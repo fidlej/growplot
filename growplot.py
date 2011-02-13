@@ -1,14 +1,8 @@
 #!/usr/bin/env python
 
-#BACKEND = "TkAgg"
-BACKEND = "GTKAgg"
-
 import matplotlib
-matplotlib.use(BACKEND)
-
+matplotlib.use("TkAgg")
 from matplotlib import pyplot
-
-import time
 
 class Animator:
     def __init__(self, figure):
@@ -20,34 +14,29 @@ class Animator:
         self.counter = 0
 
     def animate(self):
-        for i in xrange(100):
-            self.counter += 1
-            self.xvalues.append(self.counter)
-            self.yvalues.append(self.counter**2)
+        print "i", self.counter
+        self.counter += 1
+        self.xvalues.append(self.counter)
+        self.yvalues.append(self.counter**2)
 
-            if self.line is None:
-                (self.line,) = self.ax.plot(self.xvalues, self.yvalues,
-                        linestyle='steps')
-            else:
-                self.ax.set_xlim(0, self.xvalues[-1])
-                self.ax.set_ylim(0, self.yvalues[-1])
-                self.line.set_data(self.xvalues, self.yvalues)
+        if self.line is None:
+            (self.line,) = self.ax.plot(self.xvalues, self.yvalues,
+                    linestyle='steps')
+        else:
+            self.ax.set_xlim(0, self.xvalues[-1])
+            self.ax.set_ylim(0, self.yvalues[-1])
+            self.line.set_data(self.xvalues, self.yvalues)
 
-            self.figure.canvas.draw()
-            time.sleep(1)
+        self.figure.canvas.draw()
+        self.figure.canvas.manager.window.after(1000,
+                self.animate)
 
 
 def main():
-    #TODO: try it with gtk
     figure = pyplot.figure()
     animator = Animator(figure)
 
-    if BACKEND == "TkAgg":
-        figure.canvas.manager.window.after(100, animator.animate)
-    else:
-        import gobject
-        gobject.idle_add(animator.animate)
-
+    figure.canvas.manager.window.after(0, animator.animate)
     pyplot.show()
 
 

@@ -1,0 +1,36 @@
+
+//-----------------------------------------------------------------
+Goal
+====
+- Plot values obtained from a file.
+The file can be still growing.
+
+Nice to have features:
+- Allow to specify the displayed x range.
+- Allow to choose between avg or sum.
+
+//-----------------------------------------------------------------
+TODO:
+Q: How is the animation changed in new matplotlib?
+See the animation module.
+
+Q: How to allow animated graph in mathplotlib?
+a) Use tk and the animate function.
+    Cons:
+    - It blocks the toolbar.
+b) Use the new animation API.
+    Cons:
+    - It is available only in new mathplotlib.
+c) Try to use the GTK gui.
+d) Use ion()
+
+
+Q: Which lib to use?
+a) Pmw.Blt.Graph
+b) mathplotlib
+
+Q: Is it needed to hold all the values in memory?
+
+- Submit a patch for the pyplot documentation.
+http://matplotlib.sourceforge.net/faq/howto_faq.html#how-to-submit-patch
+

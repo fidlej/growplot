@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """Usage: growplot.py FILENAME
 Plots values from the possibly still growing file.
+Each value is expected to be on a new line.
 """
 
 import sys
@@ -49,12 +50,12 @@ class TailReader:
 
 
 class Animator:
-    def __init__(self, reader, figure):
+    def __init__(self, new_value_reader, figure):
         self.figure = figure
         self.ax = figure.add_subplot(111)
         self.xvalues = []
         self.yvalues = []
-        self.reader = reader
+        self.reader = new_value_reader
         self.counter = 0
         self.timeout_millis = 200
 

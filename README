@@ -1,0 +1,14 @@
+growplot
+========
+It allows to plot values from a still growing file.
+The plot is growing as new values arrive.
+
+Example usage:
+$ ./growplot.sh example.data
+
+
+Credits
+=======
+License: MIT
+Author: Ivo Danihelka <ivo@danihelka.net>
+

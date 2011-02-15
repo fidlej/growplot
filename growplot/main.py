@@ -24,7 +24,8 @@ def _parse_args():
     parser.add_option("-d", "--delimiter",
             help="delimiter to use instead of %r" % DEFAULTS["delimiter"])
     parser.add_option("--check_millis", type=int,
-            help="delay between checks for new values (default=%s)" % DEFAULTS["check_millis"])
+            help=("delay between checks for new values (default=%s)" %
+                DEFAULTS["check_millis"]))
     parser.set_defaults(**DEFAULTS)
 
     options, args = parser.parse_args()

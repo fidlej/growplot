@@ -3,8 +3,9 @@ growplot
 It allows to plot values from a still growing file.
 The plot is growing as new values arrive.
 
-Example usage:
-$ ./growplot.sh example.data
+For example, $RANDOM can be plotted by:
+$ while test -f growing.data ; do echo $RANDOM ; sleep 1 ; done >growing.data &
+$ ./growplot.sh growing.data
 
 
 Credits

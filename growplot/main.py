@@ -1,16 +1,34 @@
 #!/usr/bin/env python
-"""Usage: growplot.py FILENAME
+"""Usage: %prog FILENAME
 Plots values from the possibly still growing file.
 Each value is expected to be on a new line.
 """
 
 import sys
+import optparse
 
 import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib import pyplot
 
 from growplot.reading import TailReader
+
+DEFAULTS = {
+        "delimiter": "\n",
+        }
+
+
+def _parse_args():
+    parser = optparse.OptionParser(__doc__)
+    parser.add_option("-d", "--delimiter",
+            help="delimiter to use instead of %r" % DEFAULTS["delimiter"])
+    parser.set_defaults(**DEFAULTS)
+
+    options, args = parser.parse_args()
+    if len(args) != 1:
+        parser.error("a single input file is required")
+
+    return options, args[0]
 
 
 class Animator:
@@ -45,13 +63,8 @@ class Animator:
 
 
 def main():
-    args = sys.argv[1:]
-    if len(args) != 1:
-        print >>sys.stderr, __doc__
-        sys.exit(1)
-
-    filename = args[0]
-    reader = TailReader(filename)
+    options, filename = _parse_args()
+    reader = TailReader(filename, delimiter=options.delimiter)
 
     figure = pyplot.figure()
     animator = Animator(reader, figure)

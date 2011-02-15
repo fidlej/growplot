@@ -15,6 +15,7 @@ from growplot.reading import TailReader
 
 DEFAULTS = {
         "delimiter": "\n",
+        "check_millis": "200",
         }
 
 
@@ -22,6 +23,8 @@ def _parse_args():
     parser = optparse.OptionParser(__doc__)
     parser.add_option("-d", "--delimiter",
             help="delimiter to use instead of %r" % DEFAULTS["delimiter"])
+    parser.add_option("--check_millis", type=int,
+            help="delay between checks for new values (default=%s)" % DEFAULTS["check_millis"])
     parser.set_defaults(**DEFAULTS)
 
     options, args = parser.parse_args()
@@ -32,14 +35,14 @@ def _parse_args():
 
 
 class Animator:
-    def __init__(self, new_value_reader, figure):
+    def __init__(self, new_value_reader, figure, check_millis):
         self.figure = figure
         self.ax = figure.add_subplot(111)
         self.xvalues = []
         self.yvalues = []
         self.reader = new_value_reader
         self.counter = 0
-        self.timeout_millis = 200
+        self.check_millis = check_millis
 
         (self.line,) = self.ax.plot(self.xvalues, self.yvalues,
                 linestyle='steps')
@@ -58,7 +61,7 @@ class Animator:
 
             self.figure.canvas.draw()
 
-        self.figure.canvas.manager.window.after(self.timeout_millis,
+        self.figure.canvas.manager.window.after(self.check_millis,
                 self.animate)
 
 
@@ -67,7 +70,7 @@ def main():
     reader = TailReader(filename, delimiter=options.delimiter)
 
     figure = pyplot.figure()
-    animator = Animator(reader, figure)
+    animator = Animator(reader, figure, check_millis=options.check_millis)
     animator.animate()
     pyplot.show()
 

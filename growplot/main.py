@@ -11,7 +11,7 @@ import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib import pyplot
 
-from growplot.reading import TailReader
+from growplot import reading, limiting
 
 DEFAULTS = {
         "delimiter": "\n",
@@ -44,6 +44,7 @@ class Animator:
         self.reader = new_value_reader
         self.counter = 0
         self.check_millis = check_millis
+        self.ylim = limiting.MinMaxLim()
 
         (self.line,) = self.ax.plot(self.xvalues, self.yvalues,
                 linestyle='steps')
@@ -55,9 +56,10 @@ class Animator:
                 self.counter += 1
                 self.xvalues.append(self.counter)
                 self.yvalues.append(value)
+                self.ylim.update(value)
 
             self.ax.set_xlim(0, self.xvalues[-1])
-            self.ax.set_ylim(0, self.yvalues[-1])
+            self.ax.set_ylim(self.ylim.get_lim())
             self.line.set_data(self.xvalues, self.yvalues)
 
             self.figure.canvas.draw()
@@ -68,7 +70,7 @@ class Animator:
 
 def main():
     options, filename = _parse_args()
-    reader = TailReader(filename, delimiter=options.delimiter)
+    reader = reading.TailReader(filename, delimiter=options.delimiter)
 
     figure = pyplot.figure()
     animator = Animator(reader, figure, check_millis=options.check_millis)

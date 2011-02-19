@@ -14,7 +14,11 @@ class MinMaxLim:
             self.max = max(self.max, new_value)
 
     def get_lim(self):
-        distance = self.max - self.min
+        if self.max == self.min:
+            distance = abs(self.max)
+        else:
+            distance = self.max - self.min
+
         extra = self.margin * distance
         return (self.min - extra, self.max + extra)
 

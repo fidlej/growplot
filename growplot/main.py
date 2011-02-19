@@ -58,7 +58,7 @@ class Animator:
                 self.yvalues.append(value)
                 self.ylim.update(value)
 
-            self.ax.set_xlim(0, self.xvalues[-1])
+            self.ax.set_xlim(1, self.xvalues[-1])
             self.ax.set_ylim(self.ylim.get_lim())
             self.line.set_data(self.xvalues, self.yvalues)
 

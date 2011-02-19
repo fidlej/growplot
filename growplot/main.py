@@ -6,6 +6,7 @@ Each value is expected to be on a new line.
 
 import sys
 import optparse
+import array
 
 import matplotlib
 matplotlib.use("TkAgg")
@@ -39,15 +40,15 @@ class Animator:
     def __init__(self, new_value_reader, figure, check_millis):
         self.figure = figure
         self.ax = figure.add_subplot(111)
-        self.xvalues = []
-        self.yvalues = []
+        self.xvalues = array.array("f")
+        self.yvalues = array.array("f")
         self.reader = new_value_reader
         self.counter = 0
         self.check_millis = check_millis
         self.ylim = limiting.MinMaxLim()
 
         (self.line,) = self.ax.plot(self.xvalues, self.yvalues,
-                linestyle='steps')
+                linestyle="steps")
 
     def animate(self):
         values = self.reader.nextvalues()

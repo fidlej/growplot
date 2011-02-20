@@ -1,6 +1,6 @@
 
 def create_aggregator(name):
-    factory_name = name.capitalize() + "Aggregator"
+    factory_name = str(name).capitalize() + "Aggregator"
     return globals()[factory_name]()
 
 

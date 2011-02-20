@@ -4,15 +4,13 @@ Plots values from the possibly still growing file.
 Each value is expected to be on a new line.
 """
 
-import sys
 import optparse
-import array
 
 import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib import pyplot
 
-from growplot import reading, limiting
+from growplot import reading
 
 DEFAULTS = {
         "delimiter": "\n",
@@ -37,45 +35,39 @@ def _parse_args():
 
 
 class Animator:
-    def __init__(self, new_value_reader, figure, check_millis):
+    def __init__(self, figure, data_holder, check_millis):
         self.figure = figure
-        self.ax = figure.add_subplot(111)
-        self.xvalues = array.array("f")
-        self.yvalues = array.array("f")
-        self.reader = new_value_reader
-        self.counter = 0
+        self.data_holder = data_holder
         self.check_millis = check_millis
-        self.ylim = limiting.MinMaxLim()
 
-        (self.line,) = self.ax.plot(self.xvalues, self.yvalues,
-                linestyle="steps")
+        self.ax = figure.add_subplot(111)
+        (self.line,) = self.ax.plot([], [],
+                linestyle="steps-mid")
 
-    def animate(self):
-        values = self.reader.nextvalues()
-        if values:
-            for value in values:
-                self.counter += 1
-                self.xvalues.append(self.counter)
-                self.yvalues.append(value)
-                self.ylim.update(value)
+    def start_animation(self):
+        self._animate()
 
-            self.ax.set_xlim(1, self.xvalues[-1])
-            self.ax.set_ylim(self.ylim.get_lim())
-            self.line.set_data(self.xvalues, self.yvalues)
+    def _animate(self):
+        if self.data_holder.update_values():
+            self.ax.set_xlim(self.data_holder.get_xlim())
+            self.ax.set_ylim(self.data_holder.get_ylim())
+            self.line.set_data(self.data_holder.get_xvalues(),
+                    self.data_holder.get_yvalues())
 
             self.figure.canvas.draw()
 
         self.figure.canvas.manager.window.after(self.check_millis,
-                self.animate)
+                self._animate)
 
 
 def main():
     options, filename = _parse_args()
     reader = reading.TailReader(filename, delimiter=options.delimiter)
+    data_holder = reading.DataHolder(reader)
 
     figure = pyplot.figure()
-    animator = Animator(reader, figure, check_millis=options.check_millis)
-    animator.animate()
+    animator = Animator(figure, data_holder, check_millis=options.check_millis)
+    animator.start_animation()
     pyplot.show()
 
 

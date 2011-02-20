@@ -1,5 +1,43 @@
 
 import os
+import array
+
+from growplot import limiting
+
+class DataHolder:
+    def __init__(self, reader):
+        self.reader = reader
+        self.xvalues = array.array("f")
+        self.yvalues = array.array("f")
+        self.ylim = limiting.MinMaxLim()
+
+    def update_values(self):
+        """Returns True if there is a change.
+        """
+        values = self.reader.nextvalues()
+        if not values:
+            return False
+
+        for value in values:
+            self.xvalues.append(1 + len(self.xvalues))
+            self.yvalues.append(value)
+            self.ylim.update(value)
+
+        return True
+
+    def get_xvalues(self):
+        return self.xvalues
+
+    def get_yvalues(self):
+        return self.yvalues
+
+    def get_xlim(self):
+        return (1, len(self.xvalues))
+
+    def get_ylim(self):
+        return self.ylim.get_lim()
+
+
 
 class TailReader:
     """A reader of values from the tail of a file.

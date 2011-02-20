@@ -10,7 +10,7 @@ import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib import pyplot
 
-from growplot import reading
+from growplot import reading, aggregating
 
 DEFAULTS = {
         "delimiter": "\n",
@@ -25,6 +25,8 @@ def _parse_args():
     parser.add_option("--check_millis", type=int,
             help=("delay between checks for new values (default=%s)" %
                 DEFAULTS["check_millis"]))
+    parser.add_option("-a", "--aggregate", choices=["none", "avg", "sum"],
+            help=("use an aggregation function [none|avg|sum]"))
     parser.set_defaults(**DEFAULTS)
 
     options, args = parser.parse_args()
@@ -63,7 +65,8 @@ class Animator:
 def main():
     options, filename = _parse_args()
     reader = reading.TailReader(filename, delimiter=options.delimiter)
-    data_holder = reading.DataHolder(reader)
+    aggregator = aggregating.create_aggregator(options.aggregate)
+    data_holder = reading.DataHolder(reader, aggregator)
 
     figure = pyplot.figure()
     animator = Animator(figure, data_holder, check_millis=options.check_millis)

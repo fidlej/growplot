@@ -5,8 +5,9 @@ import array
 from growplot import limiting
 
 class DataHolder:
-    def __init__(self, reader):
+    def __init__(self, reader, aggregator):
         self.reader = reader
+        self.aggregator = aggregator
         self.xvalues = array.array("f")
         self.yvalues = array.array("f")
         self.ylim = limiting.MinMaxLim()
@@ -19,6 +20,7 @@ class DataHolder:
             return False
 
         for value in values:
+            value = self.aggregator.aggregate(value)
             self.xvalues.append(1 + len(self.xvalues))
             self.yvalues.append(value)
             self.ylim.update(value)

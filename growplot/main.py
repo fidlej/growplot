@@ -15,6 +15,8 @@ from growplot import reading, aggregating
 DEFAULTS = {
         "delimiter": "\n",
         "check_millis": "200",
+        "linestyle": "steps-mid",
+        "marker": "+",
         }
 
 
@@ -26,7 +28,11 @@ def _parse_args():
             help=("delay between checks for new values (default=%s)" %
                 DEFAULTS["check_millis"]))
     parser.add_option("-a", "--aggregate", choices=["none", "avg", "sum"],
-            help=("use an aggregation function [none|avg|sum]"))
+            help="use an aggregation function [none|avg|sum]")
+    parser.add_option("--linestyle",
+            help=("linestyle to use [-|--|steps-mid|None...] (default=%(linestyle)s" % DEFAULTS))
+    parser.add_option("--marker",
+            help=("marker to use [+|,|.|1|2...] (default=%(marker)s" % DEFAULTS))
     parser.set_defaults(**DEFAULTS)
 
     options, args = parser.parse_args()
@@ -37,14 +43,13 @@ def _parse_args():
 
 
 class Animator:
-    def __init__(self, figure, data_holder, check_millis):
+    def __init__(self, figure, data_holder, check_millis, **line_options):
         self.figure = figure
         self.data_holder = data_holder
         self.check_millis = check_millis
 
         self.ax = figure.add_subplot(111)
-        (self.line,) = self.ax.plot([], [],
-                linestyle="steps-mid")
+        (self.line,) = self.ax.plot([], [], **line_options)
 
     def start_animation(self):
         self._animate()
@@ -69,7 +74,8 @@ def main():
     data_holder = reading.DataHolder(reader, aggregator)
 
     figure = pyplot.figure()
-    animator = Animator(figure, data_holder, check_millis=options.check_millis)
+    animator = Animator(figure, data_holder, check_millis=options.check_millis,
+            linestyle=options.linestyle, marker=options.marker)
     animator.start_animation()
     pyplot.show()
 

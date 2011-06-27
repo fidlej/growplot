@@ -10,19 +10,27 @@ class DataHolder:
         self.aggregator = aggregator
         self.xvalues = array.array("f")
         self.yvalues = array.array("f")
+        self.xlim = limiting.MinMaxLim(margin=0)
         self.ylim = limiting.MinMaxLim()
 
     def update_values(self):
         """Returns True if there is a change.
         """
-        values = self.reader.nextvalues()
-        if not values:
+        pairs = self.reader.nextvalues()
+        if not pairs:
             return False
 
-        for value in values:
+        for pair in pairs:
+            if len(pair) == 1:
+                x = 1 + len(self.xvalues)
+                value = pair[0]
+            else:
+                x, value = pair
+
             value = self.aggregator.aggregate(value)
-            self.xvalues.append(1 + len(self.xvalues))
+            self.xvalues.append(x)
             self.yvalues.append(value)
+            self.xlim.update(x)
             self.ylim.update(value)
 
         return True
@@ -34,7 +42,7 @@ class DataHolder:
         return self.yvalues
 
     def get_xlim(self):
-        return (1, len(self.xvalues))
+        return self.xlim.get_lim()
 
     def get_ylim(self):
         return self.ylim.get_lim()
@@ -58,7 +66,11 @@ class TailReader:
 
         lines = (self.remainder + data).split(self.delimiter)
         self.remainder = lines[-1]
-        return [float(line) for line in lines[:-1]]
+        pairs = []
+        for line in lines[:-1]:
+            xy = line.split(None, 1)
+            pairs.append(tuple(float(value) for value in xy))
+        return pairs
 
     def _read_available(self, fd):
         """Reads all available bytes

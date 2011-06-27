@@ -1,6 +1,7 @@
 
 import os
 import array
+import errno
 
 from growplot import limiting
 
@@ -14,7 +15,8 @@ class DataHolder:
         self.ylim = limiting.MinMaxLim()
 
     def update_values(self):
-        """Returns True if there is a change.
+        """Attempts to collect more values.
+        Returns True if there is a change.
         """
         pairs = self.reader.nextvalues()
         if not pairs:

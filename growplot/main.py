@@ -30,9 +30,9 @@ def _parse_args():
     parser.add_option("-a", "--aggregate", choices=["none", "avg", "sum"],
             help="use an aggregation function [none|avg|sum]")
     parser.add_option("--linestyle",
-            help=("linestyle to use [-|--|steps-mid|None...] (default=%(linestyle)s" % DEFAULTS))
+            help=("linestyle to use [-|--|steps-mid|None...] (default=%(linestyle)s)" % DEFAULTS))
     parser.add_option("--marker",
-            help=("marker to use [+|,|.|1|2...] (default=%(marker)s" % DEFAULTS))
+            help=("marker to use [+|,|.|1|2...] (default=%(marker)s)" % DEFAULTS))
     parser.set_defaults(**DEFAULTS)
 
     options, args = parser.parse_args()
